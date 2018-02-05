@@ -1,0 +1,131 @@
+\documentclass{beamer}
+\useoutertheme{infolines}
+\usepackage[utf8]{inputenc}
+\usepackage{default}
+%\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage[normalem]{ulem}
+\newcommand\redout{\bgroup\markoverwith
+{\textcolor{red}{\rule[.5ex]{2pt}{2pt}}}\ULon}
+\usepackage{xcolor}
+\usepackage{textpos}
+\usepackage{tikz}   
+\usepackage[round]{natbib}
+\bibliographystyle{apalike}
+\usepackage[T1]{fontenc}
+\usepackage{pdfpages}
+\usepackage{hyperref}
+
+
+%\addtobeamertemplate{frametitle}{}{%
+%\begin{textblock*}{100mm}(.8\textwidth,-1cm)
+%\includegraphics[height=1cm,width=2cm]{opentreelogogrey}
+%\end{textblock*}}
+
+\useinnertheme{rectangles}
+\usetheme{Copenhagen}
+\setbeamertemplate{footline}[frame number]{}
+\setbeamertemplate{footline}{}
+
+\title[*]{Homology and inference}
+\author[*]{Emily Jane McTavish}
+\institute[*]{
+Life and Environmental Sciences\\
+University of California, Merced\\
+\texttt{ejmctavish@ucmerced.edu, twitter:snacktavish}\\
+}
+\date{}
+\setbeamertemplate{itemize items}[triangle]
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+(With thanks to Mark Holder and Richard Edwards for slides) 
+\end{frame}
+
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=13-16]{/home/ejmctavish/Desktop/old_classes/QSB244/markphylo/2013/lec3-ParalogyAndInference.pdf}
+
+
+
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=26-27]{/home/ejmctavish/Desktop/old_classes/QSB244/markphylo/2013/lec3-ParalogyAndInference.pdf}
+
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=1-4]{/home/ejmctavish/Desktop/old_classes/QSB244/markphylo/2013/lec4-Inference.pdf}
+
+
+\begin{frame}
+  \includegraphics[width=\textwidth]{phylo_midpoint-rooting}
+\end{frame}
+
+\begin{frame}
+ \includegraphics[width=\textwidth]{phylo_outgroup-rooting}
+\end{frame}
+
+
+
+%-----Digression into newick format
+
+\begin{frame}
+ \center{\Large a brief digression into newick tree file format}
+\end{frame}
+
+
+\begin{frame}
+\begin{centering}
+\includegraphics[height=0.4\textheight]{/home/ejmctavish/Desktop/Talks/newicklobster}
+\end{centering}\\
+ Newick’s Lobster House was the site of an historic 1986 meeting 
+ at which a standard was devised for storing descriptions of 
+ phylogenetic trees as strings. 
+ (Photo from Paul Lewis)
+\end{frame}
+
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=79-91]{/home/ejmctavish/Desktop/Talks/2013_SISG_13_1_slidelayout.pdf}
+
+
+
+\begin{frame}
+Newick\\
+\begin{itemize}
+ \item Parenthetical tree format
+ \item Rooted vs. unrooted trees are not differentiated
+ \item Some programs interpret polytomy at root as `unrooted
+ \item Branches and nodes not well differentiated
+ \item A name can contain and characters except blanks, colons, semicolons, parentheses, and square brackets
+\end{itemize}
+\end{frame}
+
+
+%----------Play Break---------------
+\begin{frame}
+\frametitle{Exercise}
+Create a newick tree file in your text editor with the content:
+\texttt{(((C,(D,E)),(F,G),A),B);}\\
+Save it as 'example.tre'.\\
+\begin{itemize}
+ \item Draw the tree by hand
+ \item Write down all the splits in ..** format.
+ \item Re-root  the tree. What rootings make the following true? Which cannot be true?
+ \begin{itemize}
+ \item A is more closely related to G than it is to C
+ \item (C,D,E) is sister to (A,B,F,G)
+ \item (C,D) is sister to (A,B,E,F,G)
+ \item (C,D,E) is a paraphyletic group
+ \item (C,D,E) is a monophyletic group
+ \item (A,B,C) is a monophyletic group
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+
+
+\end{document}

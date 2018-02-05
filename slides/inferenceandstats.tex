@@ -1,0 +1,184 @@
+\documentclass{beamer}
+\useoutertheme{infolines}
+\usepackage[utf8]{inputenc}
+\usepackage{default}
+%\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage[normalem]{ulem}
+\newcommand\redout{\bgroup\markoverwith
+{\textcolor{red}{\rule[.5ex]{2pt}{2pt}}}\ULon}
+\usepackage{xcolor}
+\usepackage{textpos}
+\usepackage{tikz}   
+\usepackage[round]{natbib}
+\bibliographystyle{apalike}
+\usepackage[T1]{fontenc}
+\usepackage{pdfpages}
+\usepackage{hyperref}
+
+
+%\addtobeamertemplate{frametitle}{}{%
+%\begin{textblock*}{100mm}(.8\textwidth,-1cm)
+%\includegraphics[height=1cm,width=2cm]{opentreelogogrey}
+%\end{textblock*}}
+
+\useinnertheme{rectangles}
+\usetheme{Copenhagen}
+\setbeamertemplate{footline}[frame number]{}
+\setbeamertemplate{footline}{}
+
+\title[*]{Homology and inference}
+\author[*]{Emily Jane McTavish}
+\institute[*]{
+Life and Environmental Sciences\\
+University of California, Merced\\
+\texttt{ejmctavish@ucmerced.edu, twitter:snacktavish}\\
+}
+\date{}
+\setbeamertemplate{itemize items}[triangle]
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+(With thanks to Mark Holder for slides) 
+\end{frame}
+
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=48-55]{/home/ejmctavish/Desktop/old_classes/QSB244/markphylo/2017/lec1-IntroStats.pdf}
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=57-63]{/home/ejmctavish/Desktop/old_classes/QSB244/markphylo/2017/lec1-IntroStats.pdf}
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=70]{/home/ejmctavish/Desktop/old_classes/QSB244/markphylo/2017/lec1-IntroStats.pdf}
+
+
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=72-74]{/home/ejmctavish/Desktop/old_classes/QSB244/markphylo/2017/lec1-IntroStats.pdf}
+
+
+%\appendix
+%\begin{frame}[allowframebreaks]
+% \bibliography{GradPhylo}
+%\end{frame}
+
+\begin{frame}
+Rule: Two taxa that share a character state must be more
+closely related to each other than either is to a taxon that
+displays a different state.(method suggested by Hennig)\\ 
+\textit{Is this a valid rule?}
+\end{frame}
+%\appendix
+%\begin{frame}[allowframebreaks]
+% \bibliography{GradPhylo}
+%\end{frame}
+
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=75-80]{/home/ejmctavish/Desktop/old_classes/QSB244/markphylo/2017/lec1-IntroStats.pdf}
+
+
+\begin{frame}
+ \includegraphics[width=\textwidth]{noconflictmat}\\
+Draw the rooted tree and unrooted trees consistent with these data.\\
+Mark character state changes on the tree.
+\end{frame}
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=82]{/home/ejmctavish/Desktop/old_classes/QSB244/markphylo/2017/lec1-IntroStats.pdf}
+
+
+\begin{frame}
+\begin{itemize}
+ \item If characters are not polarized (ancestral and descendent states known)
+ method can infer unrooted trees.
+ \item We can infer tree topology, but be unable to tell paraphyletic from
+monophyletic groups.
+ \item The outgroup method amounts to inferring an unrooted tree and then
+rooting the tree on the branch that leads to an outgroup.
+\end{itemize}
+\end{frame}
+
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=4]{/home/ejmctavish/Desktop/old_classes/QSB244/markphylo/2017/lec4-ML-CompatPars.pdf}
+
+\begin{frame}
+\textbf{problems with this approach}
+\begin{itemize}
+ \item We don't know polarization
+ \item We observe character conflict in real data sets
+\end{itemize}
+\end{frame}
+
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=6]{/home/ejmctavish/Desktop/old_classes/QSB244/markphylo/2017/lec4-ML-CompatPars.pdf}
+
+\begin{frame}
+\textbf{Character conflict}
+\begin{itemize}
+ \item Two characters are compatible if they can both be mapped on the same
+tree so that all of the character states displayed could be homologous.
+ \item Incompatible characters are evidence of homoplasy in the data
+ \item Homoplasy literally means the “same change” has occurred more than once
+in the evolutionary history of the group.
+\item The presence of homoplasy undermines analyses which rely on counting and minimziing changes.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+ \includegraphics[width=\textwidth]{conflictmat}\\
+Draw the a tree consistent with these data. Mark character state changes on the tree.
+\end{frame}
+
+
+\begin{frame}
+ \includegraphics[width=\textwidth]{conflictmat}\\
+How many trees can be drawn with the same number of character state changes for these data?\\
+What factors would make each of those alternative trees seem more or less likely?
+\end{frame}
+
+
+\begin{frame}
+\textbf{Should we expect character conflict?}
+\begin{itemize}
+ \item Data type?
+ \item Evolutionary history?
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\textbf{Parsimony}
+\begin{itemize}
+ \item The simplest explanation is the most likely to be true
+ \item Applied to phylogenetic inference, it is the inference metric that the tree with the fewest state changes is correct
+\end{itemize}
+
+
+\end{frame}
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=1-5]{/home/ejmctavish/Desktop/old_classes/QSB244/markphylo/parsSummaryModels.pdf}
+
+
+
+\begin{frame}
+\textbf{How can we deal with character conflict?}
+\begin{itemize}
+ \item We need to apply an error model
+ \item Likelihood provides a measure of surprise under different models
+\end{itemize}
+\end{frame}
+
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=15-20]{/home/ejmctavish/Desktop/old_classes/QSB244/Lewis/Likelihood2017.pdf}
+
+
+
+\end{document}

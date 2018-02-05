@@ -1,0 +1,170 @@
+\documentclass{beamer}
+\useoutertheme{infolines}
+\usepackage[utf8]{inputenc}
+\usepackage{default}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\graphicspath{{/home/ejmctavish/Desktop/Talks/}}
+
+\usepackage[normalem]{ulem}
+\newcommand\redout{\bgroup\markoverwith
+{\textcolor{red}{\rule[.5ex]{2pt}{2pt}}}\ULon}
+\usepackage{xcolor}
+\usepackage{textpos}
+\usepackage{tikz}   
+\usepackage[round]{natbib}
+\bibliographystyle{apalike}
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}
+\usepackage{pdfpages}
+
+
+%\addtobeamertemplate{frametitle}{}{%
+%\begin{textblock*}{100mm}(.8\textwidth,-1cm)
+%\includegraphics[height=1cm,width=2cm]{opentreelogogrey}
+%\end{textblock*}}
+
+\usetheme{Copenhagen}
+\setbeamertemplate{footline}[frame number]{}
+\setbeamertemplate{footline}{}
+
+\title[*]{Introduction to phylogenetics}
+\author[*]{Emily Jane McTavish}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+\begin{frame}
+\begin{center}
+\centerline{\includegraphics[scale=0.4]{tol_big}}
+\end{center}
+%TODO examples!
+\tiny{Image Ethan Hein}
+\end{frame}
+%My interests are in understanding the tree of life
+
+
+\begin{frame}
+\begin{center}
+\centerline{\includegraphics[scale=0.25]{tol_big_example}}
+\end{center}
+\tiny{Image Ethan Hein}
+\end{frame}
+
+
+
+\begin{frame}
+\begin{center}
+``Nothing in Biology Makes Sense Except in the Light of Evolution''\\
+Theodosius Dobzhansky 
+\end{center}
+\end{frame}
+
+
+\begin{frame}
+\begin{center}
+``Nothing in Biology Makes Sense Except in the \redout{Light of Evolution} \textcolor{red}{Context of Phylogenetics!}''\\ 
+\end{center}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Why use phylogenies?}
+For an ecologist wants to know the relationships of the taxa in their study site
+
+\centerline{\includegraphics[scale=0.3]{phylohomog}}
+
+(example from the Cavender-Bares lab webpage)
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Why use phylogenies?}
+To understand rates and types of evolutionary transitions
+
+\centerline{\includegraphics[scale=1.75]{plantsex}}
+
+%Tree structure is derived from taxonomy, where each tip represents all species in a single genus. Diploid chromosome number is indicated by the height of the innermost ring; all other rings indicate the presence or absence of the trait named at the base of the ring. 
+%The ‘Other’ ring includes the states: apomictic, gynomonoecy, andromonoecy, polygamodioecy, and polygamomonoecy. 
+%The sexual trait data displayed in the rings is based on 11,038 plant entries.
+\tiny{The Tree of Sex Consortium,(2014) Scientific Data}
+\end{frame}
+
+
+
+\begin{frame}
+Tracing epidemics
+\centerline{\includegraphics[scale=0.32]{zikaa}}
+\tiny{Faria et al., Science. 2016}
+\end{frame}
+
+\begin{frame}
+\frametitle{Introduction}
+Tracing epidemics, placing outbreaks in context
+\centerline{\includegraphics[scale=0.4]{zikab}}
+\tiny{Faria et al., Science. 2016}
+\end{frame}
+
+
+\begin{frame}
+\center{The quantity of available sequence data for inferring evolutionary relationships is increasing rapidly}
+\centerline{\includegraphics[scale=2]{seqfig}}
+\tiny{http://genome.wellcome.ac.uk/}
+\end{frame}
+
+
+\begin{frame}
+\begin{center}
+Analysis of these data is computationally challenging\\
+\bigskip
+\Large{\emph{
+``With the advent of modern molecular biology, the ability to collect biological sequence data has out-paced the ability to adequately analyze these data}''\\-- Jeff Thorne (Evolutionary biologist)\\}
+\end{center}
+\pause
+\bigskip
+Thorne et al., Journal of Molecular Evolution. \textbf{1991}
+\end{frame}
+
+\begin{frame}
+Dramatic increase DNA sequence data generation has increased computational challenges\\
+\centerline{\includegraphics[scale=0.4]{seqfig_arrow}}
+\tiny{http://genome.wellcome.ac.uk/}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+Inappropriate statistical models lead to incorrect conclusions\\
+\end{center}
+\end{frame}
+
+\setbeamercolor{background canvas}{bg=}
+\includepdf[pages=20]{WoodsHoleMole2017.pdf}
+
+
+\begin{frame}
+\textbf{How can we take advantage of evolutionary information in large data sets,}\\
+in a way that is:
+\begin{itemize}
+ \item[-] biologically informed
+ \item[-] statistically rigorous
+ \item[-] computationally efficient?
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+Goals for this course:
+\begin{itemize}
+ \item Understand the theory and statistics underpinning phylogenetic analysis.
+ \item Apply this theory to computational phylogenetic analyses and learn to use remote computing resources (MERCED cluster)
+ \item Assess and discuss primary research papers with a phylogenetic focus
+\end{itemize}
+\end{frame}
+
+
+
+\end{document}
