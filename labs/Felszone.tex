@@ -1,0 +1,45 @@
+\documentclass[a4paper,10pt]{article}
+%\documentclass[a4paper,10pt]{scrartcl}
+
+\usepackage[utf8]{inputenc}
+
+\title{}
+\author{}
+\date{}
+
+\pdfinfo{%
+  /Title    ()
+  /Author   ()
+  /Creator  ()
+  /Producer ()
+  /Subject  ()
+  /Keywords ()
+}
+
+\begin{document}
+\maketitle
+
+Lab 3:
+
+Modified from http://carrot.mcb.uconn.edu/~olgazh/bioinf2010/class29.html
+
+
+Long Branch Attraction (LBA) is a serious problem in phylogenetic reconstruction. 
+LBA denotes the fact that long branches tend to be grouped together with significant support, 
+even though the organisms representing the long branches did not share more recent common ancestry. 
+The support usually is measured through bootstrap support values for the different trees. 
+The evolution of four sequences (named A,B,C,D) was simulated according to the following tree:
+
+\includegraphics{LBA_tree}\\
+
+Files containing these sequences in multiple sequence fasta format were generated and named according to the length (x) 
+chosen for the two long branches (all scaled in substitutions per site). 
+For the simulation we assumed that the among-site-rate-variation could be described with a gamma distribution that has a shape parameter of 1 (equivalent to an exponential distribution).
+
+These files are HERE. 
+
+Save the files sequences in the directory where the PHYLIP executables are stored (within the "phylip-3.69/exe" folder).
+
+
+
+\end{document}
