@@ -52,8 +52,8 @@ p {
 </li><li><a href="#exercise1">exercise 1: start and monitor basic nucleotide runs</a>
 </li><li><a href="#exercise2">exercise 2: inspect and compare the final results of a run</a>
 </li><li><a href="#exercise3">exercise 3: constrain a search</a>
-</li><li><a href="#exercise4">exercise 4: bootstrap analyses</a>
-</li><li><a href="#exercise5">exercise 5: bootstrapping and ascertainment bias</a>
+<!--</li><li><a href="#exercise4">exercise 4: bootstrap analyses</a>-->
+<!--</li><li><a href="#exercise5">exercise 5: bootstrapping and ascertainment bias</a>-->
 <!-- </li><li><a href="#exercise6">exercise 6: use a partitioned model</a>
 </li><li><a href="#exercise9">exercise 9: use a codon model</a>
 </li><li><a href="#exercise10">exercise 10: use gap (insertion-deletion) models</a>
@@ -349,7 +349,7 @@ Constrained searches can make searching through treespace more difficult (you ca
 <strong>HW 5</strong> What is the difference in <i>ln</i>L between the constrained and unconstrained trees?<br>
 Unfortunately we can't simply do a likelihood ratio test here to test for the significance of the difference because we have no expectation for how this test statistic should be distributed under the null hypothesis. That is what the parametric bootstrap, SH or AU test would tell us, but is well beyond the scope of this demo. </p>
 </p>
-
+<!--
 
 <p><div class="btop-wrap"><a href="#top" class="btop">back to top</a></div>
 <h4 class="heading" id="exercise4">exercise 4: bootstrap analyses</h4>
@@ -378,6 +378,7 @@ You can open it in figtree - it will ask you what the labels represent. They rep
 Other external program can also be used to map bootstrap replicates onto biparitions or estimate consensus trees. 
 Good options are PAUP*, and a nice program called Sumtrees (it requires a Python installation, and is available at <a href="http://pythonhosted.org/DendroPy/programs/sumtrees.html" target="_new">http://pythonhosted.org/DendroPy/programs/sumtrees.html</a>).</p>
 </ul>
+-->
 <!--
 <p>Calulate a bootstrap consensus tree from provided boostrap run output using sumtrees.</p>  
 <p>"<span class="command">sumtrees.py --min-clade-freq=0.5 --percentages -d0 -o nucboot.sumtrees nucboot.boot.tre</span>"</p>
@@ -388,6 +389,7 @@ On the left panel of figtree click on the node labels and select bootstrap suppo
 </p>
 <p>
 -->
+<!--
 Alternatively, can post-process our bootstrap results using PAUP*. These instructions are listed for your reference, but in the interest of time, skip this section for now. </p>
 <ul>
 <li>Execute the <span class="file">datafiles/murphy29.rag1rag2.nex</span> data in PAUP (type "<span class="command">paup datafiles/murphy29.rag1rag2.nex</span>").
@@ -466,7 +468,7 @@ NOTE: The ascertainment bias corrections in RAxML will not run if there are <str
 <br>
 </p>
 <p><div class="btop-wrap"><a href="#top" class="btop">back to top</a></div>
-
+-->
 <!--
 <h4 class="heading" id="exercise6">exercise 6: use a partitioned model</h4>
 <p>
@@ -588,6 +590,8 @@ Next week we will discuss genetree-species tree approaches which allow variation
 </ul>
 
 -->
+-->
+<!--
 
 <h4 class="heading" id="exercise7">exercise 7: use a custom amino acid model</h4>
 
@@ -698,6 +702,7 @@ You might also try doing a constrained amino acid search that forces Whale and H
   </div>
   </div></div>
   -->
+ 
 <!-- END CONTENT -->  </div>
 <!-- END MAIN INNER --></div>
 <!-- END MAIN --> 
