@@ -68,7 +68,7 @@ p {
 <li>Download the package of files used in this activity: <a href="https://mctavishlab.github.io/GradPhylo/assignments/MLsearch.2017.zip">MLsearch.WH2017.zip</a><br>
 	<!--Login to the cluster and type</p>-->
 <p>wget https://mctavishlab.github.io/assets/MLsearch.WH2017.zip
-</li><li>Uncompress the zip file using "<span class="command">unzip MLsearch.2017.zip</span>"
+</li><li>Uncompress the zip file using "<span class="command">unzip MLsearch.WH2017.zip</span>"
 </ul>
 <ul><b>You will need to make edits to the configuration file and command line arguments in most cases.</b>
 </ul>
@@ -94,7 +94,7 @@ Run garli by calling the software and telling it the name of the configuration f
 
 
 To run:<br>
-<span class="command"> garli &lsaquo;garli config file&rsaquo;</span>
+<span class="command"> Garli &lsaquo;garli config file&rsaquo;</span>
 <p>
 <strong>RAxML</strong><br>
 RAxML reads its configuration information from command line flags. 
@@ -144,8 +144,8 @@ invariantsites = estimates
 </pre>
 
 </li><li>Save the file
-</li><li>Submit a job on fastq to run Garli using that configuration file. The command to run 
-<span class="command"> garli garli_ex1.conf</span>
+</li><li>run Garli using that configuration file. The command to run 
+<span class="command"> Garli garli_ex1.conf</span>
 
 </li></ul>
 <p>If you are running interactively, you will see a bunch of text scroll by, informing you about the data set and the run that is starting. If you have submitted a job this information will be writted to JOBNAME.log. Most of this information is not very important, but if the program stops be sure to read it for any error messages. The output will also contain information about the progress of the initial optimization phase, and as the program runs it will continue to log information to the screen. This output contains the current generation number, current best <i>ln</i>L score, optimization precision and the generation at which the last change in topology occurred.  All of the screen output is also written to a log file that in this case will be named <span class="file">garli_run1.screen.log</span>, so you can come back and look at it later.<br />
