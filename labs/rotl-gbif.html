@@ -159,14 +159,13 @@ mammal_latlong &lt;- as.matrix(mammal_locs[,c(3,2)]) #flip the columsn to lat, l
 tr &lt;- tol_induced_subtree(ott_id(taxa), label=&quot;name&quot;)
 plot(tr)</code></pre>
 </div>
-<div id="enforce-newick-style-tipnames-by-replacing-spaces-with-_" class="section level1">
-<h1>enforce newick style tipnames, by replacing spaces with ’_’</h1>
+<div id="enforce-newick-style-tip-names-by-replacing-spaces-with-underscores" class="section level1">
+<h1>enforce newick style tip names, by replacing spaces with underscores</h1>
 <pre class="r"><code>rownames(mammal_latlong) &lt;- gsub(' ','_',rownames(mammal_latlong)) </code></pre>
 <p>Trees from OpenTree don’t automatically come with branch lengths - we need to infer some branch lengths for this tree in order to plot it.</p>
 <pre class="r"><code>tr_bl&lt;-compute.brlen(tr) 
-tdobj&lt;-phylo.to.map(tr_bl,mammal_latlong)</code></pre>
-<pre class="r"><code>devtools::install_github(&quot;ropensci/rotl&quot;)
-devtools::install_github(&quot;phylotastic/datelife&quot;)</code></pre>
+tdobj&lt;-phylo.to.map(tr_bl,mammal_latlong,plot=FALSE)
+plot(tdobj,direction=&quot;rightwards&quot;,ftype=&quot;i&quot;)</code></pre>
 <pre class="r()"><code></code></pre>
 </div>
 
