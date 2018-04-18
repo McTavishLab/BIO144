@@ -127,7 +127,7 @@ $(document).ready(function () {
 <p>First complete the introductory tutorials on rgbif and on rotl to familiarize yourself. <a href="https://ropensci.org/tutorials/rotl_tutorial/" class="uri">https://ropensci.org/tutorials/rotl_tutorial/</a> <a href="https://ropensci.org/tutorials/rgbif_tutorial/" class="uri">https://ropensci.org/tutorials/rgbif_tutorial/</a></p>
 <div id="how-can-we-combine-the-geographic-information-from-gbif-and-the-phylogenetic-information-from-open-tree" class="section level1">
 <h1>How can we combine the geographic information from GBIF and the phylogenetic information from Open Tree?</h1>
-<p>In order to examine geographic distributions of species, it is useful to tie together information about phylogenetci relationships, which we can get from Open Tree of Life, with information about where individuals of that species are founs.</p>
+<p>In order to examine geographic distributions of species, it is useful to tie together information about phylogenetic relationships, which we can get from Open Tree of Life, with information about where individuals of that species are found.</p>
 <pre class="r"><code>library(rgbif)
 library(rotl)
 library(phytools)</code></pre>
@@ -145,7 +145,7 @@ dat4 &lt;- occ_search(scientificName = gorilla, fields=c('name','decimalLatitude
 mammal_locs &lt;- as.data.frame(rbind(dat1$data,dat2$data, dat3$data, dat4$data)) #Combine the data from each species
 rownames(mammal_locs) &lt;- mammal_locs[,1] # set the rownames to the taxon names
 mammal_latlong &lt;- as.matrix(mammal_locs[,c(3,2)]) #flip the columns to lat, long instead of long,lat</code></pre>
-<p>Instead of asking about each taxon one at a time, we can use a loop that gets the data for all taxa:</p>
+<p>Instead of asking about each taxon one at a time, we can alternatively use a loop that gets the data for all taxa:</p>
 <pre class="r"><code>mammal_locs = data.frame(matrix(vector(), 0, 3))
 for (taxon in mammal_spp){
   result &lt;- occ_search(scientificName = taxon, 

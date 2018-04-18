@@ -15,7 +15,7 @@ https://ropensci.org/tutorials/rgbif_tutorial/
 
 # How can we combine the geographic information from GBIF and the phylogenetic information from Open Tree?
 
-In order to examine geographic distributions of species, it is useful to tie together information about phylogenetci relationships, which we can get from Open Tree of Life, with information about where individuals of that species are founs.
+In order to examine geographic distributions of species, it is useful to tie together information about phylogenetic relationships, which we can get from Open Tree of Life, with information about where individuals of that species are found.
 
 ```r
 library(rgbif)
@@ -47,7 +47,7 @@ rownames(mammal_locs) <- mammal_locs[,1] # set the rownames to the taxon names
 mammal_latlong <- as.matrix(mammal_locs[,c(3,2)]) #flip the columns to lat, long instead of long,lat
 ```
 
-Instead of asking about each taxon one at a time, we can use a loop that gets the data for all taxa:
+Instead of asking about each taxon one at a time, we can alternatively use a loop that gets the data for all taxa:
 
 ```r
 mammal_locs = data.frame(matrix(vector(), 0, 3))
@@ -61,13 +61,14 @@ mammal_latlong <- as.matrix(mammal_locs[,c(3,2)]) #flip the columsn to lat, long
 ```
 
 Now we have matrix of locations - we need a tree for our of species!
+
 ```r
 taxa <- tnrs_match_names(mammal_spp, context="Animals")
 tr <- tol_induced_subtree(ott_id(taxa), label="name")
 plot(tr)
 ```
 
-#enforce newick style tip names, by replacing spaces with underscores
+enforce newick style tip names, by replacing spaces with underscores
 ```r
 rownames(mammal_latlong) <- gsub(' ','_',rownames(mammal_latlong)) 
 ```
@@ -76,7 +77,7 @@ Trees from OpenTree don't automatically come with branch lengths - we need to in
 tr_bl<-compute.brlen(tr) 
 ```
 
-Combine the phylogeney and the mapped locations
+Combine the phylogeny and the mapped locations
 ```r
 tdobj<-phylo.to.map(tr_bl,mammal_latlong,plot=FALSE)
 plot(tdobj,direction="rightwards",ftype="i")
