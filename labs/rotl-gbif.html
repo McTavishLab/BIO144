@@ -155,7 +155,7 @@ for (taxon in mammal_spp){
 rownames(mammal_locs) &lt;- mammal_locs[,1]  # set the rownames to the taxon names
 mammal_latlong &lt;- as.matrix(mammal_locs[,c(3,2)]) #flip the columsn to lat, long instead of long,lat</code></pre>
 <p>Now we have matrix of locations - we need a tree for our of species!</p>
-<pre><code>taxa &lt;- tnrs_match_names(mammal_spp, context=&quot;Animals&quot;)
+<pre class="r"><code>taxa &lt;- tnrs_match_names(mammal_spp, context=&quot;Animals&quot;)
 tr &lt;- tol_induced_subtree(ott_id(taxa), label=&quot;name&quot;)
 plot(tr)</code></pre>
 </div>
