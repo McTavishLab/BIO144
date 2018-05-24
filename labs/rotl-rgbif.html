@@ -124,15 +124,20 @@ $(document).ready(function () {
 </div>
 
 
-<p>For background complete the introductory tutorials on rgbif and on rotl to familiarize yourself. <a href="https://ropensci.org/tutorials/rotl_tutorial/" class="uri">https://ropensci.org/tutorials/rotl_tutorial/</a> <a href="https://ropensci.org/tutorials/rgbif_tutorial/" class="uri">https://ropensci.org/tutorials/rgbif_tutorial/</a></p>
+<p>For background complete the introductory tutorials on rgbif and on rotl to familiarize yourself.<br />
+<a href="https://ropensci.org/tutorials/rotl_tutorial/" class="uri">https://ropensci.org/tutorials/rotl_tutorial/</a><br />
+<a href="https://ropensci.org/tutorials/rgbif_tutorial/" class="uri">https://ropensci.org/tutorials/rgbif_tutorial/</a></p>
 <div id="combining-evolutionary-and-geographic-information" class="section level1">
 <h1>Combining evolutionary and geographic information</h1>
 <p>In order to examine geographic distributions of species, it is useful to tie together information about phylogenetic relationships, which we can get from Open Tree of Life, with information about where individuals of that species are found.</p>
+<pre class="r"><code>library(rgbif)
+library(rotl)
+library(phytools)</code></pre>
 <pre><code>## Loading required package: ape</code></pre>
 <pre><code>## Loading required package: maps</code></pre>
 </div>
-<div id="choose-species" class="section level1">
-<h1>choose species</h1>
+<div id="choose-some-species" class="section level1">
+<h1>Choose some species</h1>
 <p>Lets look for some fun species, A polar bear, “Ursus maritimus”, a hippo “Hippopotamus amphibius”, a gorilla “Gorilla gorilla” and a wild boar “Sus scrofa”, and a white shark “Eugomphodus taurus”</p>
 <pre class="r"><code>polarbear &lt;-&quot;Ursus maritimus&quot;
 hippo &lt;-&quot;Hippopotamus amphibius&quot;
@@ -158,6 +163,13 @@ rownames(locs) &lt;- locs[,1] # set the rownames to the taxon names
 latlong &lt;- as.matrix(locs[,c(3,2)]) #flip the columns to lat, long instead of long,lat
 # enforce newick style tip names, by replacing spaces with underscores
 rownames(latlong) &lt;- gsub(' ','_',rownames(latlong)) </code></pre>
+<p>Check that your species are all included and have the correct names (taxonomic name recognition sometimes updates them)</p>
+<pre class="r"><code>latlong</code></pre>
+<pre><code>##                        decimalLatitude decimalLongitude
+## Ursus_maritimus              79.560425        11.026497
+## Hippopotamus_amphibius       -0.165259        29.904577
+## Sus_scrofa                   50.016289         8.631477
+## Gorilla_gorilla              -3.131757        15.563743</code></pre>
 </div>
 <div id="now-to-join-together-the-geographic-information-with-the-phylogenetic-information" class="section level1">
 <h1>Now to join together the geographic information with the phylogenetic information!</h1>

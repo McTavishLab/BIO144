@@ -8,21 +8,21 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
-For background complete the introductory tutorials on rgbif and on rotl to familiarize yourself.
-https://ropensci.org/tutorials/rotl_tutorial/
-https://ropensci.org/tutorials/rgbif_tutorial/
+For background complete the introductory tutorials on rgbif and on rotl to familiarize yourself.  
+https://ropensci.org/tutorials/rotl_tutorial/  
+https://ropensci.org/tutorials/rgbif_tutorial/  
 
 # Combining evolutionary and geographic information
 In order to examine geographic distributions of species, it is useful to tie together information about phylogenetic relationships, which we can get from Open Tree of Life, with information about where individuals of that species are found.
 
-```{r, echo=FALSE}
+```{r}
 library(rgbif)
 library(rotl)
 library(phytools)
 ```
 
 
-#choose species
+# Choose some species
 Lets look for some fun species, 
 A polar bear, "Ursus maritimus", a hippo "Hippopotamus amphibius", a gorilla "Gorilla gorilla" and a wild boar "Sus scrofa", and a white shark "Eugomphodus taurus"
 
@@ -57,6 +57,10 @@ rownames(locs) <- locs[,1] # set the rownames to the taxon names
 latlong <- as.matrix(locs[,c(3,2)]) #flip the columns to lat, long instead of long,lat
 # enforce newick style tip names, by replacing spaces with underscores
 rownames(latlong) <- gsub(' ','_',rownames(latlong)) 
+```
+Check that your species are all included and have the correct names (taxonomic name recognition sometimes updates them)
+```{r}
+latlong
 ```
 
 # Now to join together the geographic information with the phylogenetic information!
