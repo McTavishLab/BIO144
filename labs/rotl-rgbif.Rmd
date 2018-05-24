@@ -24,7 +24,7 @@ library(phytools)
 
 # Choose some species
 Lets look for some fun species, 
-A polar bear, "Ursus maritimus", a hippo "Hippopotamus amphibius", a gorilla "Gorilla gorilla" and a wild boar "Sus scrofa", and a white shark "Eugomphodus taurus"
+A polar bear, "Ursus maritimus", a hippo "Hippopotamus amphibius", a gorilla "Gorilla gorilla" and a wild boar "Sus scrofa".
 
 ```{r}
 polarbear <-"Ursus maritimus"
@@ -63,15 +63,24 @@ Check that your species are all included and have the correct names (taxonomic n
 latlong
 ```
 
+# We can rotate our tree so it will map prettily by sorting the latitudes, and choosing the random tree rotation which is closest to that order
+```{r}
+nn<-sample(1:tr$Nnode+Ntip(tr),100,replace=TRUE)
+for(i in 1:length(nn)) tr<-read.tree(text=write.tree(rotate(tr,nn[i])))
+
+x<-names(sort(latlong[,2]))
+sort_tr<-minRotate(tr,x)
+
+```
+
 # Now to join together the geographic information with the phylogenetic information!
 Trees from OpenTree don't automatically come with branch lengths - we need to infer some branch lengths for this tree in order to plot it. (in fruture we can use R-Datelife! datelife.org)
 
 ```{r}
-tr_bl<-compute.brlen(tr) 
-tdobj<-phylo.to.map(tr_bl,latlong,rotate=TRUE,plot=FALSE)
+tr_bl<-compute.brlen(sort_tr)
 ```
 
 Combine the phylogeny and the mapped locations
 ```{r, fig.height=4, fig.width=7}
-plot(tdobj, direction="rightwards", ftype="i")
+tdobj<-phylo.to.map(tr_bl,latlong,direction="rightwards")
 ```
