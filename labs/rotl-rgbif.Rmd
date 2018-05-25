@@ -16,6 +16,8 @@ https://ropensci.org/tutorials/rgbif_tutorial/
 In order to examine geographic distributions of species, it is useful to tie together information about phylogenetic relationships, which we can get from Open Tree of Life, with information about where individuals of that species are found.
 
 ```{r}
+library(httr)
+library(jsonlite)
 library(rgbif)
 library(rotl)
 library(phytools)
@@ -42,7 +44,21 @@ tr <- tol_induced_subtree(ott_id(taxa), label="name")
 plot(tr)
 ```
 
-# How can we combine the geographic information from GBIF and the phylogenetic information from Open Tree?
+# Don't forget to cite the studies that went into building your tree!
+Pulling supporting studies isn't included in rotl yet (or I couldn't find it).
+So we will use an Open Tree API call directly.
+
+```{r}
+url_ot <- 'https://api.opentreeoflife.org/v3/tree_of_life/induced_subtree'
+body <- list(ott_ids=taxa$ott_id)
+r <- POST(url_ot, body = body, encode = "json")#gets which studies support the subtree from  the open tree API
+for(study in content(r)$supporting_studies){
+meta <- get_study_meta(study) #pulls the metadata for each study
+pub <- get_publication(meta)  #grabs teh publication information
+cat(pub,"\n\n")
+}
+```
+# Lets combine the phylogenetic information from Open Tree with geographic information from GBIF
 
 
 We will use the Global Biodiversity Information Facility (GBIF) to search for records of these species, and arbitrarily chose the first record returned as the location for the species. (sometimes the first record has no lat-long info, and we need to find a better one)
