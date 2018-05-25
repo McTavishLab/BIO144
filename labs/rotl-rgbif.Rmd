@@ -63,6 +63,7 @@ cat(pub,"\n\n")
 
 We will use the Global Biodiversity Information Facility (GBIF) to search for records of these species, and arbitrarily chose the first record returned as the location for the species. (sometimes the first record has no lat-long info, and we need to find a better one)
 
+
 ```{r}
 dat1 <- occ_search(scientificName = polarbear, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 1)
 dat2 <- occ_search(scientificName =hippo, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 1)
@@ -79,24 +80,59 @@ Check that your species are all included and have the correct names (taxonomic n
 latlong
 ```
 
-# We can rotate our tree so it will map prettily by sorting the latitudes, and choosing the random tree rotation which is closest to that order
-```{r}
-nn<-sample(1:tr$Nnode+Ntip(tr),100,replace=TRUE)
-for(i in 1:length(nn)) tr<-read.tree(text=write.tree(rotate(tr,nn[i])))
-
-x<-names(sort(latlong[,2]))
-sort_tr<-minRotate(tr,x)
-
-```
 
 # Now to join together the geographic information with the phylogenetic information!
 Trees from OpenTree don't automatically come with branch lengths - we need to infer some branch lengths for this tree in order to plot it. (in fruture we can use R-Datelife! datelife.org)
 
 ```{r}
-tr_bl<-compute.brlen(sort_tr)
+tr_bl<-compute.brlen(tr)
 ```
 
 Combine the phylogeny and the mapped locations
 ```{r, fig.height=4, fig.width=7}
-tdobj<-phylo.to.map(tr_bl,latlong,direction="rightwards")
+tdobj<-phylo.to.map(tr_bl,latlong, plot = FALSE)
+plot(tdobj, direction="rightwards")
+```
+  
+# We can do a better job of name matching by actually using the cross taxonomy mappings already encoded in the Open Tree Taxonomy!
+
+Lets try some plants
+
+```{r}
+spp2 <- c("Mimulous guttatus","Arabidopsis thaliana", "Musa gracilis", "Carex capitata")
+taxa2 <- tnrs_match_names(spp2)
+tr2 <- tol_induced_subtree(ott_id(taxa2), label="name")
+tr_bl2<-compute.brlen(tr2)
+taxa2[,"gbif"] <- NA
+locs = data.frame(matrix(vector(), nrow(taxa2), 2))
+i=1
+for(id in taxa2$ott_id){
+   tax_info <- taxonomy_taxon_info(id)
+   for(source in tax_info[[1]]$tax_sources){
+     if (grepl('gbif', source, fixed=TRUE)){
+            gbif_id <- strsplit(source,":")[[1]][2]
+            taxa2[i,]$gbif <-gbif_id
+            result <- occ_search(taxonKey = gbif_id, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 1)
+            try(locs[i,1] <- as.data.frame(result$data)[3])
+            try(locs[i,2] <- as.data.frame(result$data)[2])
+     }}
+   i = i + 1}
+rownames(locs) <- gsub(' ','_',taxa2$unique_name) 
+colnames(locs) <- c("latitude","longitude")
+```
+
+One of our species got reconciled to a synonym! 
+```{r}
+plot(tr2)
+```
+Mimulous guttatus is a synonym of Erythranthe lutea 
+```{r}
+taxa2
+```
+
+Because we are mapping tips based on keys instead of names, the name replacement doesn't matter!
+
+```{r}
+tdobj2<-phylo.to.map(tr_bl2,locs, plot = FALSE)
+plot(tdobj2, direction="rightwards")
 ```
