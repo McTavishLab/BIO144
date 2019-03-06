@@ -126,11 +126,12 @@ One of our species got reconciled to a synonym!
 plot(tr2)
 ```
 Mimulous guttatus is a synonym of Erythranthe lutea 
+https://tree.opentreeoflife.org/taxonomy/browse?id=662909
+
 ```{r}
 taxa2
 ```
-
-Because we are mapping tips based on keys instead of names, the name replacement doesn't matter!
+Because we are mapping tips based on keys instead of names, the name replacement doesn't matter affect our mapping
 
 ```{r}
 tdobj2<-phylo.to.map(tr_bl2,locs, plot = FALSE)
