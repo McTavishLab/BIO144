@@ -2,11 +2,8 @@
 title: "How to combine data from Open Tree of Life and GBIF"
 author: "Emily Jane McTavish"
 date: "`r Sys.Date()`"
-#output: pdf_document
-vignette: >
-  %\VignetteIndexEntry{How to get trees from OpenTree and combine them with GBIF location data.}
-  %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+vignette: |
+  %\VignetteIndexEntry{How to get trees from OpenTree and combine them with GBIF location data.} %\VignetteEngine{knitr::rmarkdown} \usepackage[utf8]{inputenc}
 ---
 For background complete the introductory tutorials on rgbif and on rotl to familiarize yourself.  
 https://ropensci.org/tutorials/rotl_tutorial/  
@@ -52,7 +49,8 @@ So we will use an Open Tree API call directly.
 url_ot <- 'https://api.opentreeoflife.org/v3/tree_of_life/induced_subtree'
 body <- list(ott_ids=taxa$ott_id)
 r <- POST(url_ot, body = body, encode = "json")#gets which studies support the subtree from  the open tree API
-for(study in content(r)$supporting_studies){
+for(tree in content(r)$supporting_studies){
+study <- strsplit(tree,'@')[[1]][1]
 meta <- get_study_meta(study) #pulls the metadata for each study
 pub <- get_publication(meta)  #grabs teh publication information
 cat(pub,"\n\n")
@@ -107,7 +105,7 @@ taxa2[,"gbif"] <- NA
 locs = data.frame(matrix(vector(), nrow(taxa2), 2))
 i=1
 for(id in taxa2$ott_id){
-   tax_info <- taxonomy_taxon_info(id)
+   tax_info <- taxonomy_taxon_info(as.integer(id))
    for(source in tax_info[[1]]$tax_sources){
      if (grepl('gbif', source, fixed=TRUE)){
             gbif_id <- strsplit(source,":")[[1]][2]
@@ -125,7 +123,8 @@ One of our species got reconciled to a synonym!
 ```{r}
 plot(tr2)
 ```
-Mimulous guttatus is a synonym of Erythranthe lutea 
+
+Mimulus guttatus is a synonym of Erythranthe lutea 
 https://tree.opentreeoflife.org/taxonomy/browse?id=662909
 
 ```{r}
