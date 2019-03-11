@@ -106,11 +106,11 @@ dat2 <- occ_search(scientificName =hippo, fields=c('name','decimalLatitude', 'de
 dat3 <- occ_search(scientificName = boar,  fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
 dat4 <- occ_search(scientificName = gorilla, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
 locs <- as.data.frame(rbind(dat1$data,dat2$data, dat3$data, dat4$data)) #Combine the data from each species
+locs[,1] <- gsub(' ','_',locs[,1])
 rownames(locs) <- locs[,1] # set the rownames to the taxon names
 ##This is breaking here, because of the duplicate rownames.
 latlong <- as.matrix(locs[,c(3,2)]) #flip the columns to lat, long instead of long,lat
 # enforce newick style tip names, by replacing spaces with underscores
-rownames(latlong) <- gsub(' ','_',rownames(latlong)) 
 ```
 
   
