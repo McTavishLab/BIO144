@@ -32,7 +32,8 @@ polarbear <-"Ursus maritimus"
 hippo <-"Hippopotamus amphibius"
 boar <-"Sus scrofa"
 gorilla <- "Gorilla gorilla"
-mammal_spp <- c(polarbear, boar, gorilla, hippo)
+shark <- "Eugomphodus taurus"
+mammal_spp <- c(polarbear, boar, gorilla, hippo, shark)
 ```
 
 We will use GBIF to search for records of these species, and arbitrarily chose the first record returned as the location for the species.
@@ -79,7 +80,7 @@ tr_bl<-compute.brlen(tr)
 
 Combine the phylogeny and the mapped locations
 ```r
-tdobj<-phylo.to.map(tr_bl,mammal_latlong,plot=FALSE)
+tdobj<-phylo.to.map(tr_bl,mammal_latlong,rotate=TRUE,plot=FALSE)
 plot(tdobj,direction="rightwards",ftype="i")
 ```
 
