@@ -16,12 +16,12 @@ In order to examine geographic distributions of species, it is useful to tie tog
 install.packages("devtools")
 library(devtools)
 install_github("liamrevell/phytools")
-
+library(phytools)
 library(httr)
 library(jsonlite)
 library(rgbif)
 library(rotl)
-library(phytools)
+
 
 ```
 
@@ -68,16 +68,15 @@ We will use the Global Biodiversity Information Facility (GBIF) to search for re
 
 
 ```{r}
-dat1 <- occ_search(scientificName = polarbear, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
-dat2 <- occ_search(scientificName =hippo, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
-dat3 <- occ_search(scientificName = boar,  fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
-dat4 <- occ_search(scientificName = gorilla, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
+dat1 <- occ_search(scientificName = polarbear, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 1)
+dat2 <- occ_search(scientificName =hippo, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 1)
+dat3 <- occ_search(scientificName = boar,  fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 1)
+dat4 <- occ_search(scientificName = gorilla, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 1)
 locs <- as.data.frame(rbind(dat1$data,dat2$data, dat3$data, dat4$data)) #Combine the data from each species
 rownames(locs) <- locs[,1] # set the rownames to the taxon names
 latlong <- as.matrix(locs[,c(3,2)]) #flip the columns to lat, long instead of long,lat
 # enforce newick style tip names, by replacing spaces with underscores
 rownames(latlong) <- gsub(' ','_',rownames(latlong)) 
-##This is breaking here, because of teh duplicate rownames.
 ```
 
 Check that your species are all included and have the correct names (taxonomic name recognition sometimes updates them)
@@ -98,6 +97,22 @@ Combine the phylogeny and the mapped locations
 tdobj<-phylo.to.map(tr_bl,latlong, plot = FALSE)
 plot(tdobj, direction="rightwards")
 ```
+
+
+Now lets look at muliple locations per species!
+```{r}
+dat1 <- occ_search(scientificName = polarbear, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
+dat2 <- occ_search(scientificName =hippo, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
+dat3 <- occ_search(scientificName = boar,  fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
+dat4 <- occ_search(scientificName = gorilla, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
+locs <- as.data.frame(rbind(dat1$data,dat2$data, dat3$data, dat4$data)) #Combine the data from each species
+rownames(locs) <- locs[,1] # set the rownames to the taxon names
+##This is breaking here, because of the duplicate rownames.
+latlong <- as.matrix(locs[,c(3,2)]) #flip the columns to lat, long instead of long,lat
+# enforce newick style tip names, by replacing spaces with underscores
+rownames(latlong) <- gsub(' ','_',rownames(latlong)) 
+```
+
   
 # We can do a better job of name matching by actually using the cross taxonomy mappings already encoded in the Open Tree Taxonomy!
 
