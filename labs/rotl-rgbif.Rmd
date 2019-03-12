@@ -12,21 +12,23 @@ https://ropensci.org/tutorials/rgbif_tutorial/
 # Combining evolutionary and geographic information
 In order to examine geographic distributions of species, it is useful to tie together information about phylogenetic relationships, which we can get from Open Tree of Life, with information about where individuals of that species are found.
 
-```{r}
+### Install and load necessary packages
+
+```{r message=FALSE, warning=FALSE}
 install.packages("devtools")
 library(devtools)
 install_github("liamrevell/phytools")
+#We are using the newest github version of phytools because it has some cool mapping updates that are not yet avaiable in the cran version (as of March 12, 2019).
 library(phytools)
 library(httr)
 library(jsonlite)
 library(rgbif)
 library(rotl)
-
-
+library(viridis)
 ```
 
 
-# Choose some species
+### Choose some species
 Lets look for some fun species, 
 A polar bear, "Ursus maritimus", a hippo "Hippopotamus amphibius", a gorilla "Gorilla gorilla" and a wild boar "Sus scrofa".
 
@@ -38,15 +40,23 @@ gorilla <- "Gorilla gorilla"
 spp <- c(polarbear, boar, gorilla, hippo)
 ```
 
-We can use Open Tree of Life to generate a tree for our species!  
+### We can use Open Tree of Life to generate a tree for our species!  
 ![](OpenTree-final-logo-copy.png)
-```{r}
+
+First we match the names to species in the OpenTree database. Specifying the context of the names makes the search faster.    
+```{r message=FALSE, warning=FALSE}
 taxa <- tnrs_match_names(spp, context="Animals")
+taxa
+```
+
+Then we get the relationships between these species from the OpenTree synthetic tree. 
+(See the whole tree at [tree.opentreeoflife.org](tree.opentreeoflife.org)!)  
+```{r  message=FALSE, warning=FALSE}
 tr <- tol_induced_subtree(ott_id(taxa), label="name")
 plot(tr)
 ```
 
-# Don't forget to cite the studies that went into building your tree!
+### Don't forget to cite the studies that went into building your tree!
 Pulling supporting studies isn't included in rotl yet (or I couldn't find it).
 So we will use an Open Tree API call directly.
 
@@ -61,23 +71,26 @@ pub <- get_publication(meta)  #grabs teh publication information
 cat(pub,"\n\n")
 }
 ```
+
 # Lets combine the phylogenetic information from Open Tree with geographic information from GBIF
 
-
-We will use the Global Biodiversity Information Facility (GBIF) to search for records of these species, and arbitrarily chose the first record returned as the location for the species. (sometimes the first record has no lat-long info, and we need to find a better one)
-
+We will use the Global Biodiversity Information Facility (GBIF) to search for locations of records of these species. Check out https://www.gbif.org/ to see tons more cool information!  
 
 ```{r}
-dat1 <- occ_search(scientificName = polarbear, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 1)
-dat2 <- occ_search(scientificName =hippo, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 1)
-dat3 <- occ_search(scientificName = boar,  fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 1)
-dat4 <- occ_search(scientificName = gorilla, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 1)
+dat1 <- occ_search(scientificName = polarbear, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 5)
+dat2 <- occ_search(scientificName =hippo, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 5)
+dat3 <- occ_search(scientificName = boar,  fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 5)
+dat4 <- occ_search(scientificName = gorilla, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 5)
 locs <- as.data.frame(rbind(dat1$data,dat2$data, dat3$data, dat4$data)) #Combine the data from each species
-rownames(locs) <- locs[,1] # set the rownames to the taxon names
+locs[,1] <- gsub(' ','_',locs[,1])# enforce newick style tip names, by replacing spaces with underscores
+#Sometimes the lat longs have spaces in the records. 
+#We use trimws to get rid of the whitespace, and as.numeric to encode them as numbers instead of characters.
+locs[,2]<-as.numeric(trimws(as.character(locs[,2])))
+locs[,3]<-as.numeric(trimws(as.character(locs[,3])))
 latlong <- as.matrix(locs[,c(3,2)]) #flip the columns to lat, long instead of long,lat
-# enforce newick style tip names, by replacing spaces with underscores
-rownames(latlong) <- gsub(' ','_',rownames(latlong)) 
+rownames(latlong) <- locs[,1]
 ```
+
 
 Check that your species are all included and have the correct names (taxonomic name recognition sometimes updates them)
 ```{r}
@@ -85,76 +98,85 @@ latlong
 ```
 
 
-# Now to join together the geographic information with the phylogenetic information!
-Trees from OpenTree don't automatically come with branch lengths - we need to infer some branch lengths for this tree in order to plot it. (in fruture we can use R-Datelife! datelife.org)
+## Now to join together the geographic information with the phylogenetic information!
+Trees from OpenTree don't automatically come with branch lengths - we need to infer some branch lengths for this tree in order to plot it. (in future we can use R-Datelife to get the ages! [datelife.org](datelife.org))
 
 ```{r}
 tr_bl<-compute.brlen(tr)
 ```
 
-Combine the phylogeny and the mapped locations
+Combine the phylogeny and the mapped locations using phytools.
+Thank you to Liam Revell for help getting this working!
 ```{r, fig.height=4, fig.width=7}
-tdobj<-phylo.to.map(tr_bl,latlong, plot = FALSE)
-plot(tdobj, direction="rightwards")
+cols<-setNames(sample(viridis(n=Ntip(tr_bl))),
+    tr_bl$tip.label)
+tdobj<-phylo.to.map(tr_bl,latlong,plot = FALSE, direction="rightwards")
+plot(tdobj, colors=cols, direction="rightwards")
 ```
 
 
-Now lets look at muliple locations per species!
-```{r}
-dat1 <- occ_search(scientificName = polarbear, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
-dat2 <- occ_search(scientificName =hippo, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
-dat3 <- occ_search(scientificName = boar,  fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
-dat4 <- occ_search(scientificName = gorilla, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
-locs <- as.data.frame(rbind(dat1$data,dat2$data, dat3$data, dat4$data)) #Combine the data from each species
-locs[,1] <- gsub(' ','_',locs[,1])
-rownames(locs) <- locs[,1] # set the rownames to the taxon names
-##This is breaking here, because of the duplicate rownames.
-latlong <- as.matrix(locs[,c(3,2)]) #flip the columns to lat, long instead of long,lat
-# enforce newick style tip names, by replacing spaces with underscores
-```
 
-  
 # We can do a better job of name matching by actually using the cross taxonomy mappings already encoded in the Open Tree Taxonomy!
 
-Lets try some plants
+### Lets try it some plants
 
-```{r}
-spp2 <- c("Mimulous guttatus","Arabidopsis thaliana", "Musa gracilis", "Carex capitata")
-taxa2 <- tnrs_match_names(spp2)
-tr2 <- tol_induced_subtree(ott_id(taxa2), label="name")
-tr_bl2<-compute.brlen(tr2)
-taxa2[,"gbif"] <- NA
-locs = data.frame(matrix(vector(), nrow(taxa2), 2))
-i=1
-for(id in taxa2$ott_id){
-   tax_info <- taxonomy_taxon_info(as.integer(id))
-   for(source in tax_info[[1]]$tax_sources){
-     if (grepl('gbif', source, fixed=TRUE)){
-            gbif_id <- strsplit(source,":")[[1]][2]
-            taxa2[i,]$gbif <-gbif_id
-            result <- occ_search(taxonKey = gbif_id, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 1)
-            try(locs[i,1] <- as.data.frame(result$data)[3])
-            try(locs[i,2] <- as.data.frame(result$data)[2])
-     }}
-   i = i + 1}
-rownames(locs) <- gsub(' ','_',taxa2$unique_name) 
-colnames(locs) <- c("latitude","longitude")
+```{r messages=F, warning=F, eval=TRUE}
+plants <- c("Mimulous guttatus","Arabidopsis thaliana", "Musa gracilis", "Carex capitata")
+plant_taxa <- tnrs_match_names(plants)
+plant_tree <- tol_induced_subtree(ott_id(plant_taxa), label="name")
+plant_tree_bl<-compute.brlen(plant_tree)
 ```
 
-One of our species got reconciled to a synonym! 
+## One of these species is not what we searched for!
 ```{r}
-plot(tr2)
+plot(plant_tree)
 ```
 
 Mimulus guttatus is a synonym of Erythranthe lutea 
 https://tree.opentreeoflife.org/taxonomy/browse?id=662909
 
 ```{r}
-taxa2
+plant_taxa
 ```
-Because we are mapping tips based on keys instead of names, the name replacement doesn't matter affect our mapping
+Because we will mapping tips based on unique identifiers instead of names, the name replacement doesn't affect our mapping
+
+
+## We can write a function to search for a GBIF identifier using the OpenTree ID for each taxon.
+```{r}
+get_gbif_id<-function(ottid){
+   tax_info <- taxonomy_taxon_info(as.integer(ottid))
+   gbif_id = NA
+   for(source in tax_info[[1]]$tax_sources){
+     if (grepl('gbif', source, fixed=TRUE)){
+            gbif_id <- strsplit(source,":")[[1]][2]
+     }}
+     return(gbif_id)
+   }
+``` 
+
+Once we have the gbif ID, we can seach for location records using that ID
+```{r}
+plant_locs<- NULL
+for(ottid in plant_taxa$ott_id){
+    gbif_id <- get_gbif_id(ottid)
+   locs <- as.data.frame(rbind(dat1$data,dat2$data, dat3$data, dat4$data))
+   result <- occ_search(taxonKey = gbif_id, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 20)
+   plant_locs<-as.data.frame(rbind(plant_locs, result$data))
+}
+
+#some tidying to make the input in the correct format for phytools
+plant_locs<-na.omit(plant_locs) #remove records with NA
+plant_locs[,1] <- gsub(' ','_',plant_locs[,1])# enforce newick style tip names, by replacing spaces with underscores
+#Sometimes the lat longs have spaces in the records. 
+#We use trimws to get rid of the whitespace, and as.numeric to encode them as numbers instead of characters.
+plant_locs[,2]<-as.numeric(trimws(as.character(plant_locs[,2])))
+plant_locs[,3]<-as.numeric(trimws(as.character(plant_locs[,3])))
+plant_latlong <- as.matrix(plant_locs[,c(3,2)]) #flip the columns to lat, long instead of long,lat
+rownames(plant_latlong) <- plant_locs[,1]
+```
 
 ```{r}
-tdobj2<-phylo.to.map(tr_bl2,locs, plot = FALSE)
-plot(tdobj2, direction="rightwards")
+cols<-setNames(sample(viridis(n=Ntip(plant_tree_bl))),plant_tree_bl$tip.label)
+plant_tdobj<-phylo.to.map(plant_tree_bl,plant_latlong, plot = FALSE, direction = "rightwards")
+plot(plant_tdobj, colors=cols, direction="rightwards")
 ```
