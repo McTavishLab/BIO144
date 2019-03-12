@@ -158,10 +158,11 @@ Once we have the gbif ID, we can seach for location records using that ID
 ```{r}
 plant_locs<- NULL
 for(ottid in plant_taxa$ott_id){
-    gbif_id <- get_gbif_id(ottid)
-   locs <- as.data.frame(rbind(dat1$data,dat2$data, dat3$data, dat4$data))
-   result <- occ_search(taxonKey = gbif_id, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 20)
-   plant_locs<-as.data.frame(rbind(plant_locs, result$data))
+   gbif_id <- get_gbif_id(ottid)
+   result <- occ_search(taxonKey = gbif_id, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 2)
+   if (dim(result$data)[2]==3){#drops records with no data at all
+      plant_locs<-as.data.frame(rbind(plant_locs, result$data))
+   }
 }
 
 #some tidying to make the input in the correct format for phytools
@@ -180,3 +181,45 @@ cols<-setNames(sample(viridis(n=Ntip(plant_tree_bl))),plant_tree_bl$tip.label)
 plant_tdobj<-phylo.to.map(plant_tree_bl,plant_latlong, plot = FALSE, direction = "rightwards")
 plot(plant_tdobj, colors=cols, direction="rightwards")
 ```
+
+
+## Sometimes we don't have locations for all of our species
+Lets look at fairy shrimp species from the UC Merced vernal pools reserve
+
+```{r}
+shrimp_spp <- c("Branchinecta conservatio","Branchinecta lynchi","Branchinecta mesovallensis","Linderiella occidentalis","Lepidurus packardi","Cyzicus californicus")
+shrimp_taxa <- tnrs_match_names(shrimp_spp, context="Animals")
+shrimp_tr <- tol_induced_subtree(ott_id(shrimp_taxa), label="name")
+shrimp_tr_bl<-compute.brlen(shrimp_tr)
+
+shrimp_locs <-NULL
+for(ottid in shrimp_taxa$ott_id){
+    gbif_id <- get_gbif_id(ottid)
+    result <- occ_search(taxonKey = gbif_id, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 20)
+    if (dim(result$data)[2]==3){#drops records with no data at all
+       shrimp_locs<-as.data.frame(rbind(shrimp_locs, result$data))
+    }
+}
+
+#some tidying to make the input in the correct format for phytools
+shrimp_locs<-na.omit(shrimp_locs) #remove records with NA
+shrimp_locs[,1] <- gsub(' ','_',shrimp_locs[,1])# enforce newick style tip names, by replacing spaces with underscores
+#Sometimes the lat longs have spaces in the records. 
+#We use trimws to get rid of the whitespace, and as.numeric to encode them as numbers instead of characters.
+shrimp_locs[,2]<-as.numeric(trimws(as.character(shrimp_locs[,2])))
+shrimp_locs[,3]<-as.numeric(trimws(as.character(shrimp_locs[,3])))
+shrimp_latlong <- as.matrix(shrimp_locs[,c(3,2)]) #flip the columns to lat, long instead of long,lat
+rownames(shrimp_latlong) <- shrimp_locs[,1]
+unique(shrimp_locs[,1])
+shrimp_tr$tip.label
+```
+```{r}
+species<-unique(shrimp_locs[,1])
+#we can use the -match (the negative sign makes mean NOT match) operator to drop any tips from our tree that don't match species we have locations for
+prunedtree<-drop.tip(shrimp_tr_bl,shrimp_tr_bl$tip.label[-match(species, shrimp_tr_bl$tip.label)])
+
+cols<-setNames(sample(viridis(n=Ntip(prunedtree))),prunedtree$tip.label)
+shrimp_tdobj<-phylo.to.map(prunedtree,shrimp_latlong, plot = FALSE, direction = "rightwards")
+plot(shrimp_tdobj, colors=cols, direction="rightwards")
+```
+# Wow! Pretty resticted ranges :)
