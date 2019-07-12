@@ -184,7 +184,7 @@ plot(plant_tdobj, colors=cols, direction="rightwards")
 
 
 ## Sometimes we don't have locations for all of our species
-Lets look at fairy shrimp species from the UC Merced vernal pools reserve
+Lets look at fairy shrimp species from the UC Merced vernal pools reserve [https://vernalpools.ucmerced.edu/](https://vernalpools.ucmerced.edu/)
 
 ```{r}
 shrimp_spp <- c("Branchinecta conservatio","Branchinecta lynchi","Branchinecta mesovallensis","Linderiella occidentalis","Lepidurus packardi","Cyzicus californicus")
@@ -210,9 +210,25 @@ shrimp_locs[,2]<-as.numeric(trimws(as.character(shrimp_locs[,2])))
 shrimp_locs[,3]<-as.numeric(trimws(as.character(shrimp_locs[,3])))
 shrimp_latlong <- as.matrix(shrimp_locs[,c(3,2)]) #flip the columns to lat, long instead of long,lat
 rownames(shrimp_latlong) <- shrimp_locs[,1]
-unique(shrimp_locs[,1])
-shrimp_tr$tip.label
 ```
+
+
+
+This is the list of tips in our tree
+```{r}
+sort(shrimp_tr$tip.label)
+```
+
+And this is the list of species we have location data for
+```{r}
+sort(unique(shrimp_locs[,1]))
+```
+
+
+## We don't have location data for some of our species! 
+(unless somone has added records to gbif since I wrote this tutorial :P)
+We can prune the species we don't have information for out of our tree, and map the tips that are left
+
 ```{r}
 species<-unique(shrimp_locs[,1])
 #we can use the -match (the negative sign makes mean NOT match) operator to drop any tips from our tree that don't match species we have locations for
@@ -222,4 +238,5 @@ cols<-setNames(sample(viridis(n=Ntip(prunedtree))),prunedtree$tip.label)
 shrimp_tdobj<-phylo.to.map(prunedtree,shrimp_latlong, plot = FALSE, direction = "rightwards")
 plot(shrimp_tdobj, colors=cols, direction="rightwards")
 ```
-# Wow! Pretty resticted ranges :)
+
+# Wow! Pretty restricted ranges :)
