@@ -1,0 +1,223 @@
+---
+title: "How to combine data from Open Tree of Life and GBIF"
+author: "Emily Jane McTavish"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+vignette: |
+  %\VignetteIndexEntry{How to get trees from OpenTree and combine them with GBIF location data.} %\VignetteEngine{knitr::rmarkdown} \usepackage[utf8]{inputenc}
+---
+For background, you can complete the introductory tutorials on rgbif and on rotl to familiarize yourself.  
+https://ropensci.org/tutorials/rotl_tutorial/  
+https://ropensci.org/tutorials/rgbif_tutorial/  
+
+# Combining evolutionary and geographic information
+In order to examine geographic distributions of species, it is useful to tie together information about phylogenetic relationships, which we can get from Open Tree of Life, with information about where individuals of that species are found.
+
+### Install and load necessary packages
+
+```{r message=FALSE, warning=FALSE}
+install.packages("devtools")
+library(devtools)
+install_github("liamrevell/phytools")
+#We are using the newest github version of phytools because it has some cool mapping updates that are not yet avaiable in the cran version (as of March 12, 2019).
+
+```
+
+```{r}
+library(phytools)
+library(httr)
+library(jsonlite)
+library(rgbif)
+library(rotl)
+library(viridis)
+```
+
+```{r}
+packageVersion("rgbif")
+```
+```{r}
+packageVersion("phytools")
+```
+
+### Choose some species
+Lets look for some fun species, 
+A polar bear, "Ursus maritimus", a hippo "Hippopotamus amphibius", a gorilla "Gorilla gorilla" a dolphin, "Tursiops truncatus" and a wild boar "Sus scrofa".
+
+```{r}
+polarbear <-"Ursus maritimus"
+hippo <-"Hippopotamus amphibius"
+boar <-"Sus scrofa"
+gorilla <- "Gorilla gorilla"
+dolphin <- "Tursiops truncatus"
+
+spp <- c(polarbear, boar, gorilla, hippo,dolphin)
+```
+
+### We can use Open Tree of Life to generate a tree for our species!  
+![](OpenTree-final-logo-copy.png)
+
+First we match the names to species in the OpenTree database. Specifying the context of the names makes the search faster.    
+```{r message=FALSE, warning=FALSE}
+taxa <- tnrs_match_names(spp)
+taxa
+```
+
+Then we get the relationships between these species from the OpenTree synthetic tree. 
+(See the whole tree at [tree.opentreeoflife.org](tree.opentreeoflife.org)!)  
+```{r  message=FALSE, warning=FALSE}
+tr <- tol_induced_subtree(ott_id(taxa), label="name")
+plot(tr)
+```
+
+### Don't forget to cite the studies that went into building your tree!
+Pulling supporting studies isn't included in rotl yet (or I couldn't find it).
+So we will use an Open Tree API (Applied Programatic Interface) call directly.
+
+```{r}
+url_ot <- 'https://api.opentreeoflife.org/v3/tree_of_life/induced_subtree'
+#this is the site where we are searching the information
+body <- list(ott_ids=taxa$ott_id)
+r <- POST(url_ot, body = body, encode = "json")#gets which studies support the subtree from  the open tree API
+for(tree in content(r)$supporting_studies){
+study <- strsplit(tree,'@')[[1]][1]
+meta <- get_study_meta(study) #pulls the metadata for each study
+pub <- get_publication(meta)  #grabs teh publication information
+cat(pub,"\n\n")
+}
+```
+
+# Lets combine the phylogenetic information from Open Tree with geographic information from GBIF
+
+We will use the Global Biodiversity Information Facility (GBIF) to search for locations of records of these species. Check out https://www.gbif.org/ to see tons more cool information!  
+
+```{r}
+dat1 <- occ_search(scientificName = polarbear, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 10)
+locsdat1 <- cbind(polarbear, dat1$data) #labels the lat long columns with the species name
+colnames(locsdat1)<-c("species","Long","Lat")
+
+dat2 <- occ_search(scientificName = hippo, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 10)
+locsdat2 <- cbind(hippo, dat2$data)
+colnames(locsdat2)<-c("species","Long","Lat")
+
+dat3 <- occ_search(scientificName = boar,  fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 10)
+locsdat3 <- cbind(boar, dat3$data)
+colnames(locsdat3)<-c("species","Long","Lat")
+
+dat4 <- occ_search(scientificName = gorilla, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 10)
+locsdat4 <- cbind(gorilla, dat4$data)
+colnames(locsdat4)<-c("species","Long","Lat")
+
+dat5 <- occ_search(scientificName = dolphin, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 10)
+locsdat5 <- cbind(dolphin, dat5$data)
+colnames(locsdat5)<-c("species","Long","Lat")
+
+locs <- as.data.frame(rbind(locsdat1,locsdat2, locsdat3, locsdat4, locsdat5)) #Combine the data from each species
+locs
+#You should have 3 columns, 
+```
+
+```{r}
+locs[,1] <- gsub(' ','_',locs[,1])#On the tree, names have underscores instead of spaces.
+#Sometimes the lat longs have spaces in the records. 
+#We use trimws to get rid of the whitespace, and as.numeric to record the the latitudes and longitudes as numbers instead of characters.
+locs[,2]<-as.numeric(trimws(as.character(locs[,2])))
+locs[,3]<-as.numeric(trimws(as.character(locs[,3])))
+latlong <- as.matrix(locs[,c(3,2)]) #flip the columns to lat, long instead of long,lat
+rownames(latlong) <- locs[,1]
+```
+
+
+Check that your species are all included and have the correct names (taxonomic name recognition sometimes updates them)
+```{r}
+latlong
+```
+
+
+## Now to join together the geographic information with the phylogenetic information!
+Trees from OpenTree don't automatically come with branch lengths - we need to infer some branch lengths for this tree in order to plot it. (in future we can use R-Datelife to get the ages! [datelife.org](datelife.org))
+
+```{r}
+tr_bl<-compute.brlen(tr)
+```
+
+Combine the phylogeny and the mapped locations using phytools.
+Thank you to Liam Revell for help getting this working!
+```{r}
+cols<-setNames(sample(viridis(n=Ntip(tr_bl))),
+    tr_bl$tip.label)# This sets the colors to pretty colors
+tdobj<-phylo.to.map(tr_bl,latlong,plot = FALSE, direction="rightwards")
+plot(tdobj, colors=cols, direction="rightwards")
+#If there is an error with 'cols' try this instead:
+#plot(tdobj, direction="rightwards")
+```
+
+
+
+# Lets look at some fairy shrimp species from the UC Merced vernal pools reserve
+[https://vernalpools.ucmerced.edu/](https://vernalpools.ucmerced.edu/)
+
+```{r}
+shrimp1 <- "Branchinecta conservatio"
+shrimp2 <- "Branchinecta lynchi"
+shrimp3 <- "Lepidurus packardi"
+shrimp4 <-"Cyzicus californicus"
+shrimp_spp <- c(shrimp1,shrimp2,shrimp3, shrimp4)
+shrimp_taxa <- tnrs_match_names(shrimp_spp)
+shrimp_tr <- tol_induced_subtree(ott_id(shrimp_taxa), label="name")
+shrimp_tr_bl<-compute.brlen(shrimp_tr)
+plot(shrimp_tr_bl)
+```
+
+Look up the papers that went into this tree
+
+```{r results="hide"}
+url_ot <- 'https://api.opentreeoflife.org/v3/tree_of_life/induced_subtree'
+#this is the site where we are searching the information
+body <- list(ott_ids=shrimp_taxa$ott_id)
+r <- POST(url_ot, body = body, encode = "json")#gets which studies support the subtree from  the open tree API
+for(tree in content(r)$supporting_studies){
+study <- strsplit(tree,'@')[[1]][1]
+meta <- get_study_meta(study) #pulls the metadata for each study
+pub <- get_publication(meta)  #grabs the publication information
+cat(pub,"\n\n")
+}
+```
+
+##Now lets get fairy shrimp location data!
+```{r}
+dat1 <- occ_search(scientificName = shrimp1, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 10)
+dat2 <- occ_search(scientificName = shrimp2, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 10)
+dat3 <- occ_search(scientificName = shrimp3,  fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 10)
+dat4 <- occ_search(scientificName = shrimp4, fields=c('name','decimalLatitude', 'decimalLongitude'), limit = 10)
+
+locsdat1 <- cbind(shrimp1, dat1$data) #labels the lat long columns with the species name
+colnames(locsdat1)<-c("species","Long","Lat")
+locsdat2 <- cbind(shrimp2, dat2$data) #labels the lat long columns with the species name
+colnames(locsdat2)<-c("species","Long","Lat")
+locsdat3 <- cbind(shrimp3, dat3$data) #labels the lat long columns with the species name
+colnames(locsdat3)<-c("species","Long","Lat")
+locsdat4 <- cbind(shrimp4, dat4$data) #labels the lat long columns with the species name
+colnames(locsdat4)<-c("species","Long","Lat")
+
+locs <- as.data.frame(rbind(locsdat1, locsdat2, locsdat3, locsdat4)) #Combine the data from each species
+locs 
+
+locs[,1] <- gsub(' ','_',locs[,1])#ON the tree, names have underscores instead of spaces.
+#Sometimes the lat longs have spaces in the records. 
+#We use trimws to get rid of the whitespace, and as.numeric to record the the latitudes and longitudes as numbers instead of characters.
+locs[,2]<-as.numeric(trimws(as.character(locs[,2])))
+locs[,3]<-as.numeric(trimws(as.character(locs[,3])))
+latlong <- as.matrix(locs[,c(3,2)]) #flip the columns to lat, long instead of long,lat
+rownames(latlong) <- locs[,1]
+```
+
+
+
+```{r fig.show="hide"}
+cols<-setNames(sample(viridis(n=Ntip(shrimp_tr_bl))),shrimp_tr_bl$tip.label)
+shrimp_tdobj<-phylo.to.map(shrimp_tr_bl,latlong, plot = FALSE, direction = "rightwards")
+plot(shrimp_tdobj,  colors=cols, direction="rightwards")
+```
+
