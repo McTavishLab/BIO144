@@ -2,11 +2,8 @@
 title: "How to combine data from Open Tree of Life and GBIF"
 author: "Emily Jane McTavish"
 date: "`r Sys.Date()`"
-#output: pdf_document
-vignette: >
-  %\VignetteIndexEntry{How to get trees from OpenTree and combine them with GBIF location data.}
-  %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+vignette: |
+  %\VignetteIndexEntry{How to get trees from OpenTree and combine them with GBIF location data.} %\VignetteEngine{knitr::rmarkdown} \usepackage[utf8]{inputenc}
 ---
 For background complete the introductory tutorials on rgbif and on rotl to familiarize yourself.  
 https://ropensci.org/tutorials/rotl_tutorial/  
@@ -16,6 +13,8 @@ https://ropensci.org/tutorials/rgbif_tutorial/
 In order to examine geographic distributions of species, it is useful to tie together information about phylogenetic relationships, which we can get from Open Tree of Life, with information about where individuals of that species are found.
 
 ```{r}
+install.packages(c("httr", "jsonlite", "rgbif", "rotl", "phytools", "viridis"))
+
 library(httr)
 library(jsonlite)
 library(rgbif)
